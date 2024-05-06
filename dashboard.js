@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("total_incidents").textContent = (parentsCount * (0.15 + 0.09 + 0.088)).toFixed(0);
     
     document.getElementById("custom_graphics").setAttribute("href", custom_graphics);
-    console.log("`tttt");
+    console.log("HI");
     console.log(school_buildings);
     //usersPerMonthChart
     new Chart(document.getElementById("usersPerMonthChart"), {
