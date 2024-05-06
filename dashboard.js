@@ -142,7 +142,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const getTop = (items) => Object.entries(items).map(([key, count]) => ({ key, count })).sort((a, b) => b.count - a.count).slice(0, 10);
     const topUsers = getTop(results.userCounts).map(({ key, count }) => ({ name: key, count }));
     const topPages = getTop(results.pageCounts).map(({ key, count }) => ({ url: key, count }));
-    const topSchoolBuildings = getTop(results.schoolCounts).map(({ key, count }) => ({ schoolName: data.school_buildings.find(school => school.id === parseInt(key))?.school_name || 'Unknown',count})).filter(({ schoolName }) => schoolName !== 'Unknown');
+    const topSchoolBuildings = getTop(results.schoolCounts).map(({ key, count }) => ({ schoolName: school_buildings.find(school => school.id === parseInt(key))?.school_name || 'Unknown',count})).filter(({ schoolName }) => schoolName !== 'Unknown');
 
     //topUsersChart
     new Chart(document.getElementById('topUsersChart'), {
