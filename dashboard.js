@@ -1,4 +1,4 @@
-console.log("school_buildings");
+console.log("Hhhhhhh");
 document.addEventListener("DOMContentLoaded", async () => {
   try {
     const member = await window.$memberstackDom.getCurrentMember();
