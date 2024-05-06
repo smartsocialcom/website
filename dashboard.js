@@ -138,7 +138,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         return acc;
     }, { userCounts: {}, pageCounts: {}, schoolCounts: {} });
-
+    console.log(school_buildings);
     const getTop = (items) => Object.entries(items).map(([key, count]) => ({ key, count })).sort((a, b) => b.count - a.count).slice(0, 10);
     const topUsers = getTop(results.userCounts).map(({ key, count }) => ({ name: key, count }));
     const topPages = getTop(results.pageCounts).map(({ key, count }) => ({ url: key, count }));
