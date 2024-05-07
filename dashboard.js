@@ -1,7 +1,5 @@
-if (window.scriptExecuted) {
-  console.log("This script has already been executed. Skipping...");
-} else {
-  window.scriptExecuted = true;  // Set the flag indicating the script has executed
+if (!window.scriptExecuted) {
+  window.scriptExecuted = true;
   document.addEventListener("DOMContentLoaded", async () => {
       try {
         const member = await window.$memberstackDom.getCurrentMember();
