@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
   let executed;
-  if (executed == "Yes"){
+  if (executed != "Yes"){
     try {
       executed = "Yes";
       const member = await window.$memberstackDom.getCurrentMember();
