@@ -206,7 +206,7 @@ if (!window.scriptExecuted) {
         });
 
         // List School Buildings Pincodes
-        document.getElementById('student_pin_list').innerHTML = school_building.map(school => 
+        document.getElementById('student_pin_list').innerHTML = school_buildings.map(school => 
           `<a fs-copyclip-text="https://smartsocial.com/students?pin=${school.student_pin_code}" fs-copyclip-element="click" fs-copyclip-message="Link Copied!" href="#" class="link-list w-button">
               ${school.school_name}<span class="pincode">Pincode: ${school.student_pin_code}</span>
           </a>`
