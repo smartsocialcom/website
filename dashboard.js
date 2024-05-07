@@ -1,8 +1,5 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  let executed;
-  if (executed != "Yes"){
     try {
-      executed = "Yes";
       const member = await window.$memberstackDom.getCurrentMember();
       const org = member.data.customFields.organization;
       document.getElementById("copy_link").textContent = `https://${window.location.hostname}/members?org=${org}`;
@@ -205,7 +202,14 @@ document.addEventListener("DOMContentLoaded", async () => {
           }
         }
       });
-  
+
+      // List School Buildings Pincodes
+      document.getElementById('student_pin_list').innerHTML = school_building.map(school => 
+        `<a fs-copyclip-text="https://smartsocial.com/students?pin=${school.student_pin_code}" fs-copyclip-element="click" fs-copyclip-message="Link Copied!" href="#" class="link-list w-button">
+            ${school.school_name}<span class="pincode">Pincode: ${school.student_pin_code}</span>
+        </a>`
+      ).join('');
+    
       //Download
       document.getElementById("download").addEventListener("click", async () => {
         const data = await (await fetch(`https://xlbh-3re4-5vsp.n7c.xano.io/api:eJ2WWeJh/user/shortcode/${org}`)).json();
@@ -228,5 +232,4 @@ document.addEventListener("DOMContentLoaded", async () => {
     } catch (error) {
       console.error("Error:", error);
     }
-  }
 });
