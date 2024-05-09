@@ -221,11 +221,4 @@ if (!window.scriptExecuted) {
     console.error("Error:", error);
   }
   });
-
-  setTimeout(() => {
-    const script = document.createElement('script');
-    script.defer = true;
-    script.src = "https://cdn.jsdelivr.net/npm/@finsweet/attributes-copyclip@1/copyclip.js";
-    document.head.appendChild(script);
-  }, 3000); // Load copyToClipboard script  
 }
