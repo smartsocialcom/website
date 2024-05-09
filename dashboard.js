@@ -20,7 +20,7 @@ if (!window.scriptExecuted) {
     document.getElementById("screen_avoided").textContent = (parentsCount * 0.09).toFixed(0);
     document.getElementById("abuse_avoided").textContent = (parentsCount * 0.088).toFixed(0);
     document.getElementById("total_incidents").textContent = (parentsCount * (0.15 + 0.09 + 0.088)).toFixed(0);
-    
+
     const getTop = (items) => Object.entries(items).map(([key, count]) => ({ key, count })).sort((a, b) => b.count - a.count).slice(0, 10);
   
     document.getElementById("custom_graphics").setAttribute("href", data.organization.custom_graphics);
@@ -221,4 +221,11 @@ if (!window.scriptExecuted) {
     console.error("Error:", error);
   }
   });
+
+  setTimeout(() => {
+    const script = document.createElement('script');
+    script.defer = true;
+    script.src = "https://cdn.jsdelivr.net/npm/@finsweet/attributes-copyclip@1/copyclip.js";
+    document.head.appendChild(script);
+  }, 3000); // Load copyToClipboard script  
 }
