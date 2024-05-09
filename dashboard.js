@@ -22,9 +22,8 @@ if (!window.scriptExecuted) {
         document.getElementById("total_incidents").textContent = (parentsCount * (0.15 + 0.09 + 0.088)).toFixed(0);
         
         document.getElementById("custom_graphics").setAttribute("href", custom_graphics);
-        console.log("BB");
-        console.log(school_buildings);
-        //usersPerMonthChart
+        const generateColors = (count) => ["#EF476F", "#FFD166", "#06D6A0", "#118AB2", "#073B4C", "#FFC6FF", "#9BF6FF", "#A0C4FF", "#BDB2FF", "#FFADAD", "#F94144", "#F3722C", "#F8961E", "#F9C74F", "#90BE6D", "#277DA1", "#577590", "#4D908E", "#43AA8B", "#F9844A", "#8338EC", "#3A86FF", "#EF233C", "#FF6D00", "#FFD500", "#06D6A0", "#118AB2", "#073B4C", "#FFD166", "#EF476F"].slice(0, count);
+
         new Chart(document.getElementById("usersPerMonthChart"), {
           type: "bar",
           data: {
@@ -40,8 +39,6 @@ if (!window.scriptExecuted) {
           options: { scales: { y: { beginAtZero: true } } }
         });
     
-        //schoolBuildingsChart
-        const generateColors = (count) => ["#EF476F", "#FFD166", "#06D6A0", "#118AB2", "#073B4C", "#FFC6FF", "#9BF6FF", "#A0C4FF", "#BDB2FF", "#FFADAD", "#F94144", "#F3722C", "#F8961E", "#F9C74F", "#90BE6D", "#277DA1", "#577590", "#4D908E", "#43AA8B", "#F9844A", "#8338EC", "#3A86FF", "#EF233C", "#FF6D00", "#FFD500", "#06D6A0", "#118AB2", "#073B4C", "#FFD166", "#EF476F"].slice(0, count);
         new Chart(document.getElementById("schoolBuildingsChart"), {
           type: "doughnut",
           data: { 
@@ -69,7 +66,6 @@ if (!window.scriptExecuted) {
           }
         });
     
-        //studentLoginsPerMonthChart
         const loginsPerMonth = Array(12).fill(0);
         studentsLoginLog.forEach(log => loginsPerMonth[new Date(log.created_at).getMonth()]++);
         new Chart(document.getElementById("studentLoginsPerMonthChart"), {
@@ -85,7 +81,6 @@ if (!window.scriptExecuted) {
           options: { scales: { y: { beginAtZero: true } } }
         });
     
-        //studentLoginsPerBuilding
         new Chart(document.getElementById("studentLoginsPerBuilding"), {
           type: "doughnut",
           data: {
@@ -147,7 +142,6 @@ if (!window.scriptExecuted) {
         const topPages = getTop(results.pageCounts).map(({ key, count }) => ({ url: key, count }));
         const topSchoolBuildings = getTop(results.schoolCounts).map(({ key, count }) => ({ schoolName: school_buildings.find(school => school.id === parseInt(key))?.school_name || 'Unknown',count})).filter(({ schoolName }) => schoolName !== 'Unknown');
     
-        //topUsersChart
         new Chart(document.getElementById('topUsersChart'), {
           type: 'bar',
           data: {
@@ -160,7 +154,6 @@ if (!window.scriptExecuted) {
           }
         });
     
-        //topPagesChart
         new Chart(document.getElementById('topPagesChart'), {
           type: 'bar',
           data: {
@@ -173,7 +166,6 @@ if (!window.scriptExecuted) {
           }
         });
     
-        //topSchoolBuildings
         const totalTopSchoolBuildings = topSchoolBuildings.reduce((sum, item) => sum + item.count, 0);
         new Chart(document.getElementById("topSchoolBuildings"), {
           type: "doughnut",
@@ -205,14 +197,8 @@ if (!window.scriptExecuted) {
           }
         });
 
-        // List School Buildings Pincodes
-        document.getElementById('student_pin_list').innerHTML = school_buildings.map(school => 
-          `<a fs-copyclip-text="https://smartsocial.com/students?pin=${school.student_pin_code}" fs-copyclip-element="click" fs-copyclip-message="Link Copied!" href="#" class="link-list w-button">
-              ${school.school_name}<span class="pincode">Pincode: ${school.student_pin_code}</span>
-          </a>`
-        ).join('');
+        document.getElementById('student_pin_list').innerHTML = school_buildings.map(school => `<a fs-copyclip-text="https://smartsocial.com/students?pin=${school.student_pin_code}" fs-copyclip-element="click" fs-copyclip-message="Link Copied!" href="#" class="link-list w-button">${school.school_name}<span class="pincode">Pincode: ${school.student_pin_code}</span></a>`).join(''); // List School Buildings Pincodes
       
-        //Download
         document.getElementById("download").addEventListener("click", async () => {
           const data = await (await fetch(`https://xlbh-3re4-5vsp.n7c.xano.io/api:eJ2WWeJh/user/shortcode/${org}`)).json();
           const csv = "Email,First Name,Last Name,School Buildings\n" + data.users.map(user => {
