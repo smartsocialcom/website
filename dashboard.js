@@ -119,9 +119,7 @@ if (!window.scriptExecuted) {
     //Top Users, Pages, Active Schoolbuildings
     const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
     const log = data.log.reduce((acc, { created_at, page_url, user, school_buildings_id }) => {
-        // Ensure user is defined and has both first_name and last_name
-        if (!user || !user.first_name || !user.last_name) return acc;
-
+      if (!user || !user.first_name || !user.last_name) return acc;
         const validPaths = [
             '/events', '/teen-slang', '/app-guide',
             '/video-games', '/parental-control', '/online-activities',
@@ -138,29 +136,24 @@ if (!window.scriptExecuted) {
         }
 
         acc.userCounts[fullName] = (acc.userCounts[fullName] || 0) + 1;
-        school_buildings_id.forEach(id => acc.schoolCounts[id] = (acc.schoolCounts[id] || 0) + 1);
-
+        school_buildings_id.forEach((building) => {
+          if (building && building.school_name) {
+            acc.schoolCounts[building.school_name] = (acc.schoolCounts[building.school_name] || 0) + 1;
+          }
+        });
+        
         return acc;
     }, { userCounts: {}, pageCounts: {}, schoolCounts: {} });
 
     const topUsers = getTop(log.userCounts).map(({ key, count }) => ({ name: key, count }));
     const topPages = getTop(log.pageCounts).map(({ key, count }) => ({ url: key, count }));
-    const topSchoolBuildings = getTop(log.schoolCounts).map(({ key, count }) => ({
-        schoolName: school_buildings.find(school => school.id === parseInt(key))?.school_name || 'Unknown',
-        count
-    })).filter(({ schoolName }) => schoolName !== 'Unknown');
-
+    const topSchoolBuildings = getTop(log.schoolCounts).map(({ key, count }) => ({ school_name: key, count }));
+    console.log(topSchoolBuildings);
     new Chart(document.getElementById('topUsersChart'), {
       type: 'bar',
       data: {
         labels: topUsers.map(u => u.name),
-        datasets: [{ 
-          label: 'Most Active Users', 
-          data: topUsers.map(u => u.count), 
-          backgroundColor: '#03afaf', 
-          borderColor: '#03afaf', 
-          borderWidth: 1 
-        }]
+        datasets: [{ label: 'Most Active Users', data: topUsers.map(u => u.count), backgroundColor: '#03afaf', borderColor: '#03afaf', borderWidth: 1 }]
       },
       options: {
         indexAxis: 'y',
@@ -172,13 +165,7 @@ if (!window.scriptExecuted) {
       type: 'bar',
       data: {
         labels: topPages.map(p => p.url),
-        datasets: [{ 
-          label: 'Top Visited Pages', 
-          data: topPages.map(p => p.count), 
-          backgroundColor: '#03afaf', 
-          borderColor: '#007bff', 
-          borderWidth: 1 
-        }]
+        datasets: [{ label: 'Top Visited Pages', data: topPages.map(p => p.count), backgroundColor: '#03afaf', borderColor: '#007bff', borderWidth: 1 }]
       },
       options: {
         indexAxis: 'y',
@@ -189,9 +176,9 @@ if (!window.scriptExecuted) {
     new Chart(document.getElementById("topSchoolBuildings"), {
       type: "doughnut",
       data: {
-        labels: topSchoolBuildings.map(item => item.schoolName),
+        labels: topSchoolBuildings.map(item => item.school_name),
         datasets: [{
-          data: topSchoolBuildings.map(item => item.count),
+          data: topSchoolBuildings.map(item => (item.count / topSchoolBuildings.reduce((sum, item) => sum + item.count, 0) * 100).toFixed(2)),
           backgroundColor: generateColors(topSchoolBuildings.length),
           hoverOffset: 4
         }]
@@ -206,7 +193,7 @@ if (!window.scriptExecuted) {
           },
           title: {
             display: true,
-            text: ''
+            text: 'Top School Buildings'
           },
           legend: {
             display: true,
@@ -214,7 +201,7 @@ if (!window.scriptExecuted) {
           }
         }
       }
-    });
+    });    
 
     document.getElementById('student_pin_list').innerHTML = school_buildings.map(school => `<a fs-copyclip-text="https://smartsocial.com/students?pin=${school.student_pin_code}" fs-copyclip-element="click" fs-copyclip-message="Link Copied!" href="#" class="link-list w-button">${school.school_name}<span class="pincode">Pincode: ${school.student_pin_code}</span></a>`).join(''); // List School Buildings Pincodes
   
