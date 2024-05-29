@@ -119,6 +119,9 @@ if (!window.scriptExecuted) {
     //Top Users, Pages, Active Schoolbuildings
     const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
     const log = data.log.reduce((acc, { created_at, page_url, user, school_buildings_id }) => {
+        // Ensure user is defined and has both first_name and last_name
+        if (!user || !user.first_name || !user.last_name) return acc;
+
         const validPaths = [
             '/events', '/teen-slang', '/app-guide',
             '/video-games', '/parental-control', '/online-activities',
@@ -142,13 +145,22 @@ if (!window.scriptExecuted) {
 
     const topUsers = getTop(log.userCounts).map(({ key, count }) => ({ name: key, count }));
     const topPages = getTop(log.pageCounts).map(({ key, count }) => ({ url: key, count }));
-    const topSchoolBuildings = getTop(log.schoolCounts).map(({ key, count }) => ({ schoolName: school_buildings.find(school => school.id === parseInt(key))?.school_name || 'Unknown',count})).filter(({ schoolName }) => schoolName !== 'Unknown');
+    const topSchoolBuildings = getTop(log.schoolCounts).map(({ key, count }) => ({
+        schoolName: school_buildings.find(school => school.id === parseInt(key))?.school_name || 'Unknown',
+        count
+    })).filter(({ schoolName }) => schoolName !== 'Unknown');
 
     new Chart(document.getElementById('topUsersChart'), {
       type: 'bar',
       data: {
         labels: topUsers.map(u => u.name),
-        datasets: [{ label: 'Most Active Users', data: topUsers.map(u => u.count), backgroundColor: '#03afaf', borderColor: '#03afaf', borderWidth: 1 }]
+        datasets: [{ 
+          label: 'Most Active Users', 
+          data: topUsers.map(u => u.count), 
+          backgroundColor: '#03afaf', 
+          borderColor: '#03afaf', 
+          borderWidth: 1 
+        }]
       },
       options: {
         indexAxis: 'y',
@@ -160,7 +172,13 @@ if (!window.scriptExecuted) {
       type: 'bar',
       data: {
         labels: topPages.map(p => p.url),
-        datasets: [{ label: 'Top Visited Pages', data: topPages.map(p => p.count), backgroundColor: '#03afaf', borderColor: '#007bff', borderWidth: 1 }]
+        datasets: [{ 
+          label: 'Top Visited Pages', 
+          data: topPages.map(p => p.count), 
+          backgroundColor: '#03afaf', 
+          borderColor: '#007bff', 
+          borderWidth: 1 
+        }]
       },
       options: {
         indexAxis: 'y',
@@ -173,7 +191,7 @@ if (!window.scriptExecuted) {
       data: {
         labels: topSchoolBuildings.map(item => item.schoolName),
         datasets: [{
-          data: topSchoolBuildings.map(item => (item.count / topSchoolBuildings.reduce((sum, item) => sum + item.count, 0) * 100).toFixed(2)),
+          data: topSchoolBuildings.map(item => item.count),
           backgroundColor: generateColors(topSchoolBuildings.length),
           hoverOffset: 4
         }]
