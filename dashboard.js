@@ -55,7 +55,7 @@ if (!window.scriptExecuted) {
         cutout: "50%", 
         plugins: { 
           title: { display: true, text: "" },
-          legend: { display: true, position: "bottom" },
+          legend: { display: false, position: "bottom" },
           tooltip: {
             callbacks: {
               label: function(context) {
