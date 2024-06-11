@@ -147,7 +147,7 @@ if (!window.scriptExecuted) {
 
     const topUsers = getTop(log.userCounts).map(({ key, count }) => ({ name: key, count }));
     const topPages = getTop(log.pageCounts).map(({ key, count }) => ({ url: key, count }));
-    const topSchoolBuildings = getTop(log.schoolCounts).map(({ key, count }) => ({ school_name: key, count }));
+    const topSchoolBuildings = getTop(log.schoolCounts).filter(({ key }) => key !== "District Staff").map(({ key, count }) => ({ school_name: key, count }));
     console.log(topSchoolBuildings);
     new Chart(document.getElementById('topUsersChart'), {
       type: 'bar',
