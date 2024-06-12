@@ -41,80 +41,90 @@ if (!window.scriptExecuted) {
       },
       options: { scales: { y: { beginAtZero: true } } }
     });
-
-    new Chart(document.getElementById("schoolBuildingsChart"), {
-      type: "doughnut",
-      data: { 
-        labels: school_buildings.map(item => item.school_name), 
-        datasets: [{ 
-          data: school_buildings.map(item => item.registered_school_parents), 
-          backgroundColor: generateColors(school_buildings.length), 
-        }] 
-      },
-      options: { 
-        cutout: "50%", 
-        plugins: { 
-          title: { display: true, text: "" },
-          legend: { display: false, position: "bottom" },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                let total = context.dataset.data.reduce((a, b) => a + b, 0);
-                let percentage = (context.raw / total * 100).toFixed(2) + '%';
-                return context.label + ': ' + percentage;
+    if(school_buildings.length){
+      new Chart(document.getElementById("schoolBuildingsChart"), {
+        type: "doughnut",
+        data: { 
+          labels: school_buildings.map(item => item.school_name), 
+          datasets: [{ 
+            data: school_buildings.map(item => item.registered_school_parents), 
+            backgroundColor: generateColors(school_buildings.length), 
+          }] 
+        },
+        options: { 
+          cutout: "50%", 
+          plugins: { 
+            title: { display: true, text: "" },
+            legend: { display: false, position: "bottom" },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                  let percentage = (context.raw / total * 100).toFixed(2) + '%';
+                  return context.label + ': ' + percentage;
+                }
               }
             }
-          }
-        } 
-      }
-    });
-
+          } 
+        }
+      });
+    } else {
+      document.getElementById("schoolBuildingsChartWrapper").innerHTML = `<div class="chart_message-wrapper"><h4 class="chart_message">Data is being updated as more parents access. Use <a href="https://smartsocial.com/share?org=rooseveltmiddleschool"><strong>Sharing Center</strong></a> to get more parents involved so this graph has accurate data.</h4></div>`
+    }
     const loginsPerMonth = Array(12).fill(0);
     studentsLoginLog.forEach(studentLog => loginsPerMonth[new Date(studentLog.created_at).getMonth()]++);
-    new Chart(document.getElementById("studentLoginsPerMonthChart"), {
-      type: "bar",
-      data: {
-        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-        datasets: [{
-          label: "Student Logins per month in your community",
-          data: loginsPerMonth,
-          backgroundColor: "#03afaf"
-        }]
-      },
-      options: { scales: { y: { beginAtZero: true } } }
-    });
 
-    new Chart(document.getElementById("studentLoginsPerBuilding"), {
-      type: "doughnut",
-      data: {
-        labels: Object.keys(studentsLoginLog.reduce((acc, { _school_buildings: { school_name } }) => {
-          acc[school_name] = (acc[school_name] || 0) + 1;
-          return acc;
-        }, {})),
-        datasets: [{
-          data: Object.values(studentsLoginLog.reduce((acc, { _school_buildings: { school_name } }) => {
+    if (loginsPerMonth.length){
+      new Chart(document.getElementById("studentLoginsPerMonthChart"), {
+        type: "bar",
+        data: {
+          labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+          datasets: [{
+            label: "Student Logins per month in your community",
+            data: loginsPerMonth,
+            backgroundColor: "#03afaf"
+          }]
+        },
+        options: { scales: { y: { beginAtZero: true } } }
+      });
+    } else {
+      document.getElementById("studentLoginsPerMonthChartWrapper").innerHTML = `<div class="chart_message-wrapper"><h4 class="chart_message">Data is being updated as more parents access. Use <a href="https://smartsocial.com/share?org=rooseveltmiddleschool"><strong>Sharing Center</strong></a> to get more parents involved so this graph has accurate data.</h4></div>`
+    }
+    if (studentsLoginLog.length) {
+      new Chart(document.getElementById("studentLoginsPerBuilding"), {
+        type: "doughnut",
+        data: {
+          labels: Object.keys(studentsLoginLog.reduce((acc, { _school_buildings: { school_name } }) => {
             acc[school_name] = (acc[school_name] || 0) + 1;
             return acc;
           }, {})),
-          backgroundColor: generateColors(studentsLoginLog.length)
-        }]
-      },
-      options: {
-        cutout: "50%",
-        plugins: {
-          title: { display: true, text: "" },
-          legend: { display: true, position: "bottom" },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                return `${context.label}: ${(context.raw / total * 100).toFixed(2)}%`;
+          datasets: [{
+            data: Object.values(studentsLoginLog.reduce((acc, { _school_buildings: { school_name } }) => {
+              acc[school_name] = (acc[school_name] || 0) + 1;
+              return acc;
+            }, {})),
+            backgroundColor: generateColors(studentsLoginLog.length)
+          }]
+        },
+        options: {
+          cutout: "50%",
+          plugins: {
+            title: { display: true, text: "" },
+            legend: { display: true, position: "bottom" },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                  return `${context.label}: ${(context.raw / total * 100).toFixed(2)}%`;
+                }
               }
             }
           }
         }
-      }
-    });
+      });
+    } else {
+      document.getElementById("studentLoginsPerBuildingWrapper").innerHTML = `<div class="chart_message-wrapper"><h4 class="chart_message">Data is being updated as more parents access. Use <a href="https://smartsocial.com/share?org=rooseveltmiddleschool"><strong>Sharing Center</strong></a> to get more parents involved so this graph has accurate data.</h4></div>`
+    }
 
     //Top Users, Pages, Active Schoolbuildings
     const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
@@ -148,62 +158,73 @@ if (!window.scriptExecuted) {
     const topUsers = getTop(log.userCounts).map(({ key, count }) => ({ name: key, count }));
     const topPages = getTop(log.pageCounts).map(({ key, count }) => ({ url: key, count }));
     const topSchoolBuildings = getTop(log.schoolCounts).filter(({ key }) => key !== "District Staff").map(({ key, count }) => ({ school_name: key, count }));
-    console.log(topSchoolBuildings);
-    new Chart(document.getElementById('topUsersChart'), {
-      type: 'bar',
-      data: {
-        labels: topUsers.map(u => u.name),
-        datasets: [{ label: 'Most Active Users', data: topUsers.map(u => u.count), backgroundColor: '#03afaf', borderColor: '#03afaf', borderWidth: 1 }]
-      },
-      options: {
-        indexAxis: 'y',
-        scales: { x: { beginAtZero: true } }
-      }
-    });
+    if (topUsers.length > 1) {
+      new Chart(document.getElementById('topUsersChart'), {
+        type: 'bar',
+        data: {
+          labels: topUsers.map(u => u.name),
+          datasets: [{ label: 'Most Active Users', data: topUsers.map(u => u.count), backgroundColor: '#03afaf', borderColor: '#03afaf', borderWidth: 1 }]
+        },
+        options: {
+          indexAxis: 'y',
+          scales: { x: { beginAtZero: true } }
+        }
+      });
+    } else {
+      document.getElementById("topUsersChartWrapper").innerHTML = `<div class="chart_message-wrapper"><h4 class="chart_message">Data is being updated as more parents access. Use <a href="https://smartsocial.com/share?org=rooseveltmiddleschool"><strong>Sharing Center</strong></a> to get more parents involved so this graph has accurate data.</h4></div>`
+    }
 
-    new Chart(document.getElementById('topPagesChart'), {
-      type: 'bar',
-      data: {
-        labels: topPages.map(p => p.url),
-        datasets: [{ label: 'Top Visited Pages', data: topPages.map(p => p.count), backgroundColor: '#03afaf', borderColor: '#007bff', borderWidth: 1 }]
-      },
-      options: {
-        indexAxis: 'y',
-        scales: { x: { beginAtZero: true } }
-      }
-    });
+    if (topPages.length) {
+      new Chart(document.getElementById('topPagesChart'), {
+        type: 'bar',
+        data: {
+          labels: topPages.map(p => p.url),
+          datasets: [{ label: 'Top Visited Pages', data: topPages.map(p => p.count), backgroundColor: '#03afaf', borderColor: '#007bff', borderWidth: 1 }]
+        },
+        options: {
+          indexAxis: 'y',
+          scales: { x: { beginAtZero: true } }
+        }
+      });
+    } else {
+      document.getElementById("topPagesChartWrapper").innerHTML = `<div class="chart_message-wrapper"><h4 class="chart_message">Data is being updated as more parents access. Use <a href="https://smartsocial.com/share?org=rooseveltmiddleschool"><strong>Sharing Center</strong></a> to get more parents involved so this graph has accurate data.</h4></div>`
+    }
 
-    new Chart(document.getElementById("topSchoolBuildings"), {
-      type: "doughnut",
-      data: {
-        labels: topSchoolBuildings.map(item => item.school_name),
-        datasets: [{
-          data: topSchoolBuildings.map(item => (item.count / topSchoolBuildings.reduce((sum, item) => sum + item.count, 0) * 100).toFixed(2)),
-          backgroundColor: generateColors(topSchoolBuildings.length),
-          hoverOffset: 4
-        }]
-      },
-      options: {
-        cutout: "50%",
-        plugins: {
-          tooltip: {
-            callbacks: {
-              label: (tooltipItem) => `${tooltipItem.label}: ${tooltipItem.raw}%`
+    if (topSchoolBuildings.length) {
+      new Chart(document.getElementById("topSchoolBuildings"), {
+        type: "doughnut",
+        data: {
+          labels: topSchoolBuildings.map(item => item.school_name),
+          datasets: [{
+            data: topSchoolBuildings.map(item => (item.count / topSchoolBuildings.reduce((sum, item) => sum + item.count, 0) * 100).toFixed(2)),
+            backgroundColor: generateColors(topSchoolBuildings.length),
+            hoverOffset: 4
+          }]
+        },
+        options: {
+          cutout: "50%",
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: (tooltipItem) => `${tooltipItem.label}: ${tooltipItem.raw}%`
+              }
+            },
+            title: {
+              display: true,
+              text: 'Top School Buildings'
+            },
+            legend: {
+              display: true,
+              position: "bottom"
             }
-          },
-          title: {
-            display: true,
-            text: 'Top School Buildings'
-          },
-          legend: {
-            display: true,
-            position: "bottom"
           }
         }
-      }
-    });    
+      });
+    } else {
+      document.getElementById("topSchoolBuildingsWrapper").innerHTML = `<div class="chart_message-wrapper"><h4 class="chart_message">Data is being updated as more parents access. Use <a href="https://smartsocial.com/share?org=rooseveltmiddleschool"><strong>Sharing Center</strong></a> to get more parents involved so this graph has accurate data.</h4></div>`
+    }
 
-    document.getElementById('student_pin_list').innerHTML = school_buildings.map(school => `<a fs-copyclip-text="https://smartsocial.com/students?pin=${school.student_pin_code}" fs-copyclip-element="click" fs-copyclip-message="Link Copied!" href="#" class="link-list w-button">${school.school_name}<span class="pincode">Pincode: ${school.student_pin_code}</span></a>`).join(''); // List School Buildings Pincodes
+    document.getElementById('student_pin_listWrapper').innerHTML = school_buildings.map(school => `<a fs-copyclip-text="https://smartsocial.com/students?pin=${school.student_pin_code}" fs-copyclip-element="click" fs-copyclip-message="Link Copied!" href="#" class="link-list w-button">${school.school_name}<span class="pincode">Pincode: ${school.student_pin_code}</span></a>`).join(''); // List School Buildings Pincodes
   
     document.getElementById("download").addEventListener("click", async () => {
       const data = await (await fetch(`https://xlbh-3re4-5vsp.n7c.xano.io/api:eJ2WWeJh/user/shortcode/${org}`)).json();
